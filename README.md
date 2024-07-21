@@ -42,11 +42,12 @@ https://github.com/adityavkulkarni/6350_assignment3/tree/master/Part1
 6. Copy ```logstash-ner.conf``` from repository to ```$LOGSTASH_DIR/config```, and replace your credentials
 7. Start Logstash: ```cd $LOGSTASH_DIR; bin/logstash -f config/logstash-ner.conf```
 8. Create index "ner": ```curl -X PUT "localhost:9200/ner -u user:password```
-9. Run ```ner_analyser.py```: ```spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 ner_analyser.py```
-10. Run ```reddit_scraper.py```: ```python3 reddit_scrapper.py```
-11. Open Kibana: ```http://localhost:5601/app/dashboards#```
-12. Go to ```Analytics->Discover->Select Dataview="ner"``` and now you can visualise the data
-13. Sample dashboard output is present in the report
+9. Make changes to config.ini to setup kafka information and reddit credentials
+10. Run ```ner_analyser.py```: ```spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 ner_analyser.py```
+11. Run ```reddit_scraper.py```: ```python3 reddit_scrapper.py```
+12. 2Open Kibana: ```http://localhost:5601/app/dashboards#```
+13. Go to ```Analytics->Discover->Select Dataview="ner"``` and now you can visualise the data
+14. Sample dashboard output is present in the report
 
 ---------------------------------------------------
 
