@@ -7,6 +7,7 @@ PRAW is used to stream the posts(submissions) from the "r/all" and a combination
 
 ### Tech stack used:
 - Pyspark streaming
+- NLTK
 - Kafka-python
 - PRAW
 - ELK Stack
