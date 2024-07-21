@@ -72,15 +72,6 @@ class RedditScraper:
             if submission is None:
                 continue
             self._publish_submission(submission)
-            """
-            self.kafka_producer.publish(
-                text=f"{submission.title}\n{submission.selftext}",
-                topic=self._kafka_topic
-            )
-            if message_sent == 100:
-                print(f"Sent 100 articles to Kafka queue")
-                message_sent = 0
-            message_sent += 1"""
 
 
 if __name__ == "__main__":

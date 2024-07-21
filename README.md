@@ -1,5 +1,40 @@
-Assignment 3 Part 1
-# Spark Streaming with Real Time Data and Kafka
+# Assignment 3 
+## Directory structure:
+```
+|
+|-- Part1
+|   |
+|   |-- config.ini
+|   |-- kafka_producer.py
+|   |-- logstash-ner.conf
+|   |-- ner_analyser.py
+|   |-- Part1_Report.docx
+|   |-- README.md
+|   |-- reddit_scrapper.py
+|   `-- requirements.txt
+|
+|-- Part2
+|   |-- input
+|   |   `-- wiki-Vote.txt
+|   |
+|   |-- output
+|   |   |-- connectedComponents.csv
+|   |   |-- inDegree.csv
+|   |   |-- outDegree.csv
+|   |   |-- pageRank.csv
+|   |   |-- stronglyConnectedComponents.csv
+|   |   `-- triangleCount.csv
+|   |
+|   |-- Assignment3-part-2.ipynb - Colab.pdf
+|   |-- Assignment3-part-2.ipynb
+|   |-- Part2_Report.docx
+|   `-- README.md
+|
+|-- cs6350_Assignment3.docx
+`-- README.md
+```
+-------------------------------------------------------
+# Part 1: Spark Streaming with Real Time Data and Kafka
 
 ### Data source used:
 Reddit - using the PRAW Python library: https://praw.readthedocs.io/en/latest/code_overview/other/subredditstream.html
@@ -49,11 +84,8 @@ https://github.com/adityavkulkarni/6350_assignment3/tree/master/Part1
 12. 2Open Kibana: ```http://localhost:5601/app/dashboards#```
 13. Go to ```Analytics->Discover->Select Dataview="nerkibana"``` and now you can visualise the data
 14. Sample dashboard output is present in the report
-
 ---------------------------------------------------
-
-Assignment 3 Part 2 
-# Analyzing Social Networks using GraphX/GraphFrame
+# Part 2: Analyzing Social Networks using GraphX/GraphFrame
 
 ### Dataset used:
 Wikipedia vote network (https://snap.stanford.edu/data/wiki-Vote.html)
