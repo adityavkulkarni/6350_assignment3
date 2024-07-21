@@ -1,21 +1,26 @@
 import nltk
-nltk.download("punkt")
-nltk.download("averaged_perceptron_tagger")
-nltk.download("maxent_ne_chunker")
-nltk.download("words")
 
 from configparser import ConfigParser
 from nltk import ne_chunk, pos_tag, word_tokenize, Tree
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, split, desc, col, lower, regexp_replace, udf, trim, to_json, struct
 
+
+# NLTK modules downloads
+nltk.download("punkt")
+nltk.download("averaged_perceptron_tagger")
+nltk.download("maxent_ne_chunker")
+nltk.download("words")
+
+
+# Config parsing
 _config = ConfigParser()
 _config.read(["./config.ini"])
-
 bootstrapServers = _config.get("KAFKA", "bootstrap_servers")
 input_topic = _config.get("TOPICS", "input_topic")
 output_topic = _config.get("TOPICS", "output_topic")
 
+# Initialize spark
 spark = (
     SparkSession
     .builder
@@ -28,6 +33,7 @@ spark.sparkContext.setCheckpointDir("/tmp")
 
 @udf()
 def extract_named_entities(x):
+    # TODO: refactor
     chunked = ne_chunk(pos_tag(word_tokenize(x)))
     continuous_chunk = []
     current_chunk = []
@@ -45,6 +51,7 @@ def extract_named_entities(x):
 
 
 if __name__ == "__main__":
+    # Read stream from Kafka
     articles = (
         spark
         .readStream
@@ -55,6 +62,7 @@ if __name__ == "__main__":
         .selectExpr("CAST(value AS STRING)")
     )
 
+    # Extract named entities and clean the text
     named_entities = (
         articles
         .select(extract_named_entities(col("value")).alias("value"))
@@ -62,6 +70,7 @@ if __name__ == "__main__":
         .withColumn("value", regexp_replace("value", r"[^ a-zA-Z0-9]+", ""))
     )
 
+    # Generate word count
     output = (
         named_entities
         .select(
@@ -69,20 +78,13 @@ if __name__ == "__main__":
             .alias('word')
         )
         .withColumn("word", regexp_replace("word", r"^\s+$", ""))
-        .filter(trim(col("word"))!="")
+        .filter(trim(col("word")) != "")
         .groupBy('word')
         .count()
         .orderBy(desc("count"))
     )
-    """
-    query = output \
-        .writeStream \
-        .outputMode('complete') \
-        .format('console') \
-        .start()
-    """
-    # wordCounts = words.groupBy('word').count().orderBy(desc("count"))
 
+    # Output to Kafka topic further connected to ELK
     query = (
         output
         .select(to_json(struct(col("word"), col("count"))).alias("value"))
@@ -94,4 +96,7 @@ if __name__ == "__main__":
         .option("topic", output_topic)
         .start()
     )
+
+    # Wrap up
     query.awaitTermination()
+    spark.stop()

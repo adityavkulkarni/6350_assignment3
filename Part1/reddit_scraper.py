@@ -7,6 +7,10 @@ from kafka_producer import Kafka
 
 class RedditScraper:
     def __init__(self):
+        """
+        Initializes the Reddit Scraper class
+        """
+        # Config parsing
         self._config = ConfigParser()
         self._config.read(["./config.ini"])
         self._username = self._config.get("REDDIT", "username")
@@ -14,10 +18,10 @@ class RedditScraper:
         self._client_secret = self._config.get("REDDIT", "client_secret")
         self._password = self._config.get("REDDIT", "password")
         self._user_agent = self._config.get("REDDIT", "user_agent")
-
-        self.kafka_topic = self._config.get("TOPICS", "input_topic")
+        self._kafka_topic = self._config.get("TOPICS", "input_topic")
 
         try:
+            # Initialise reddit API
             self.reddit = praw.Reddit(
                 client_id=self._client_id,
                 client_secret=self._client_secret,
@@ -28,23 +32,32 @@ class RedditScraper:
             print(f"Connected to Reddit: {self._username}")
         except Exception as e:
             print(f"Failed to connect to Reddit: {e}")
+
+        # Initialize Kafka producer
         self.kafka_producer = Kafka()
 
     def stream(self, subreddit="all"):
-        message_sent = 1
+        """
+        Stream subreddits to Kafka topic
+        :param subreddit: name of subreddit to stream
+        :return:
+        """
         try:
+            # Generate streamer instance
             streamer = SubredditStream(self.reddit.subreddit(subreddit))
             print(f"Connected to Subreddit: {subreddit}")
         except Exception as e:
             print(f"Failed to connect to Subreddit: {e}")
 
+        # Streaming to Kafka
+        message_sent = 1
         for submission in streamer.submissions():
             self.kafka_producer.publish(
                 text=f"{submission.title}\n{submission.selftext}",
-                topic=self.kafka_topic
+                topic=self._kafka_topic
             )
-            if message_sent == 10:
-                print(f"Sent 10 articles to Kafka queue")
+            if message_sent == 100:
+                print(f"Sent 100 articles to Kafka queue")
                 message_sent = 0
             message_sent += 1
 
