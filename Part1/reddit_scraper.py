@@ -1,3 +1,5 @@
+import sys
+
 import praw
 from configparser import ConfigParser
 from praw.models.reddit.subreddit import SubredditStream
@@ -20,6 +22,7 @@ class RedditScraper:
         self._user_agent = self._config.get("REDDIT", "user_agent")
         self._kafka_topic = self._config.get("TOPICS", "input_topic")
 
+        self.message_sent = 1
         try:
             # Initialise reddit API
             self.reddit = praw.Reddit(
@@ -36,6 +39,14 @@ class RedditScraper:
         # Initialize Kafka producer
         self.kafka_producer = Kafka()
 
+    def _publish_submission(self, submission):
+        self.kafka_producer.publish(
+            text=f"{submission.title}\n{submission.selftext}",
+            topic=self._kafka_topic
+        )
+        sys.stdout.write(f"\rSent {self.message_sent} articles to Kafka queue")
+        self.message_sent += 1
+
     def stream(self, subreddit="all"):
         """
         Stream subreddits to Kafka topic
@@ -51,7 +62,17 @@ class RedditScraper:
 
         # Streaming to Kafka
         message_sent = 1
+        print(f"Fetching top posts from: {subreddit}")
+        for submission in self.reddit.subreddit(subreddit).hot(limit=1000):
+            if submission is None:
+                break
+            self._publish_submission(submission)
+        print(f"\nStreaming subreddits: {subreddit}")
         for submission in streamer.submissions():
+            if submission is None:
+                continue
+            self._publish_submission(submission)
+            """
             self.kafka_producer.publish(
                 text=f"{submission.title}\n{submission.selftext}",
                 topic=self._kafka_topic
@@ -59,9 +80,10 @@ class RedditScraper:
             if message_sent == 100:
                 print(f"Sent 100 articles to Kafka queue")
                 message_sent = 0
-            message_sent += 1
+            message_sent += 1"""
 
 
 if __name__ == "__main__":
     r = RedditScraper()
-    r.stream()
+    #r.stream()
+    r.stream("PoliticalDiscussion+NeutralPolitics+news+inthenews+USNewsHub+worldnews")

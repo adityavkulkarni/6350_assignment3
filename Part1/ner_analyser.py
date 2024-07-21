@@ -1,10 +1,14 @@
 import nltk
+import shutil
+
 
 from configparser import ConfigParser
 from nltk import ne_chunk, pos_tag, word_tokenize, Tree
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode, split, desc, col, lower, regexp_replace, udf, trim, to_json, struct
 
+# Remove the previous checkpoints if present
+shutil.rmtree('./tmp', ignore_errors=True)
 
 # NLTK modules downloads
 nltk.download("punkt")
