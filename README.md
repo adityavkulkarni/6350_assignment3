@@ -3,7 +3,7 @@ Assignment 3 Part 1
 
 ### Data source used:
 Reddit - using the PRAW Python library: https://praw.readthedocs.io/en/latest/code_overview/other/subredditstream.html
-PRAW is used to stream the posts(submissions) from the "r/all" and a combination of news and politics related subreddits.
+PRAW is used to stream the posts(submissions) from the "r/all".
 
 ### Tech stack used:
 - Pyspark streaming

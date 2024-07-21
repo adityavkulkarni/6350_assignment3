@@ -85,5 +85,4 @@ class RedditScraper:
 
 if __name__ == "__main__":
     r = RedditScraper()
-    #r.stream()
-    r.stream("PoliticalDiscussion+NeutralPolitics+news+inthenews+USNewsHub+worldnews")
+    r.stream()
