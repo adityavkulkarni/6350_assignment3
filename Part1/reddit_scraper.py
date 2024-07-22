@@ -59,9 +59,9 @@ class RedditScraper:
             print(f"Connected to Subreddit: {subreddit}")
         except Exception as e:
             print(f"Failed to connect to Subreddit: {e}")
+            sys.exit(1)
 
         # Streaming to Kafka
-        message_sent = 1
         print(f"Fetching top posts from: {subreddit}")
         for submission in self.reddit.subreddit(subreddit).hot(limit=1000):
             if submission is None:

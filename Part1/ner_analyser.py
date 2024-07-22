@@ -32,17 +32,20 @@ spark = (
     .getOrCreate()
 )
 spark.sparkContext.setLogLevel("ERROR")
-spark.sparkContext.setCheckpointDir("/tmp")
+spark.sparkContext.setCheckpointDir("./tmp")
 
 
 @udf()
 def extract_named_entities(x):
-    # TODO: refactor
-    chunked = ne_chunk(pos_tag(word_tokenize(x)))
+    """
+    Extract named entities from a sentence.
+    :param x: sentence
+    :return: list of entities
+    """
     continuous_chunk = []
     current_chunk = []
-    for i in chunked:
-        if type(i) == Tree:
+    for i in ne_chunk(pos_tag(word_tokenize(x))):
+        if type(i) is Tree:
             current_chunk.append(" ".join([token for token, pos in i.leaves()]))
         if current_chunk:
             named_entity = " ".join(current_chunk)
